@@ -52,6 +52,18 @@ jobs:
       - name: Prebuild Android project (native)
         run: npx expo prebuild --platform android --no-install
 
+      - name: Increase Gradle memory (avoid OOM on CI runners)
+        run: |
+          # Expo's default heap (2 GB) can OOM during release dependency
+          # collection on free runners. Raise it; the last value in
+          # gradle.properties wins, so appending overrides the default.
+          {
+            echo ""
+            echo "org.gradle.jvmargs=-Xmx5120m -XX:MaxMetaspaceSize=1024m -XX:+HeapDumpOnOutOfMemoryError -Dfile.encoding=UTF-8"
+            echo "org.gradle.parallel=false"
+            echo "org.gradle.workers.max=2"
+          } >> android/gradle.properties
+
       - name: Inject release signing config
         run: node scripts/apply-android-signing.js
 
