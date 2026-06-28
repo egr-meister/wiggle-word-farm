@@ -1,7 +1,7 @@
-// Parent settings: word voice, default difficulty, notes, and clear data.
+// Parent settings: default difficulty, notes, and clear data.
 
 import React, { useState, useCallback } from "react";
-import { View, Text, StyleSheet, Switch, Alert } from "react-native";
+import { View, Text, StyleSheet, Alert } from "react-native";
 import { useFocusEffect } from "@react-navigation/native";
 
 import colors from "../theme/colors";
@@ -30,14 +30,7 @@ export default function ParentSettingsScreen({ navigation }) {
 
   useFocusEffect(reload);
 
-  const soundEnabled = settings ? settings.soundEnabled !== false : true;
   const defaultDifficulty = settings?.defaultDifficulty ?? "easy";
-
-  const onToggleSound = async (value) => {
-    const next = { ...(settings || {}), soundEnabled: value, wordVoiceEnabled: value };
-    setSettings(next);
-    await updateSettings(next);
-  };
 
   const onSetDifficulty = async (id) => {
     const next = { ...(settings || {}), defaultDifficulty: id };
@@ -65,25 +58,6 @@ export default function ParentSettingsScreen({ navigation }) {
 
   return (
     <ScreenContainer>
-      {/* Word Voice / Sound */}
-      <View style={styles.card}>
-        <View style={styles.rowBetween}>
-          <Text style={styles.cardTitle}>Word Voice / Sound</Text>
-          <Switch
-            value={soundEnabled}
-            onValueChange={onToggleSound}
-            trackColor={{ true: colors?.primary ?? "#5FA777", false: "#CCCCCC" }}
-            thumbColor="#FFFFFF"
-          />
-        </View>
-        <Text style={styles.bodyText}>
-          Word voice helps children hear simple English words. It can be turned off anytime.
-        </Text>
-        <Text style={styles.smallNote}>
-          If word voice is not available on the device, the app continues with visual word cards.
-        </Text>
-      </View>
-
       {/* Default Difficulty */}
       <View style={styles.card}>
         <Text style={styles.cardTitle}>Default Difficulty</Text>

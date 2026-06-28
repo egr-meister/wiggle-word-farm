@@ -13,12 +13,6 @@ export const GAME_MODE_ITEMS = [
     emoji: "🧩",
     description: "Match the word with the correct picture.",
   },
-  {
-    id: "listen_choose",
-    label: "Listen and Choose",
-    emoji: "🔊",
-    description: "Hear the word and choose the picture.",
-  },
 ];
 
 export const DIFFICULTY_ITEMS = [

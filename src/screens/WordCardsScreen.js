@@ -14,7 +14,6 @@ import { getWordsByCategory } from "../data/vocabularyItems";
 import { getCategoryItem } from "../data/categoryItems";
 import { loadAppData, markVocabularyWordLearned } from "../storage/appStorage";
 import { getLearnedWordIds } from "../utils/progressHelpers";
-import { speakWordIfEnabled } from "../utils/speechHelpers";
 
 export default function WordCardsScreen({ navigation, route }) {
   const categoryId = route?.params?.categoryId ?? "animals";
@@ -22,7 +21,6 @@ export default function WordCardsScreen({ navigation, route }) {
   const words = getWordsByCategory(categoryId);
 
   const [index, setIndex] = useState(0);
-  const [settings, setSettings] = useState(null);
   const [learnedIds, setLearnedIds] = useState([]);
 
   const current = words.length > 0 ? words[Math.min(index, words.length - 1)] : null;
@@ -32,7 +30,6 @@ export default function WordCardsScreen({ navigation, route }) {
       let active = true;
       loadAppData().then((d) => {
         if (active) {
-          setSettings(d?.settings ?? null);
           setLearnedIds(getLearnedWordIds(d?.progress));
         }
       });
@@ -49,10 +46,6 @@ export default function WordCardsScreen({ navigation, route }) {
       setLearnedIds(getLearnedWordIds(d?.progress));
     });
   }, [current?.id]);
-
-  const onHear = () => {
-    if (current) speakWordIfEnabled(current.word, settings);
-  };
 
   const goNext = () => {
     if (words.length === 0) return;
@@ -72,7 +65,6 @@ export default function WordCardsScreen({ navigation, route }) {
     );
   }
 
-  const soundOn = settings ? settings.soundEnabled !== false && settings.wordVoiceEnabled !== false : true;
   const learned = learnedIds.indexOf(current.id) >= 0;
 
   return (
@@ -83,9 +75,6 @@ export default function WordCardsScreen({ navigation, route }) {
       <WordCard item={current} learned={learned} />
 
       <View style={styles.buttons}>
-        {soundOn ? (
-          <AppButton label="Hear Word" emoji="🔊" variant="secondary" onPress={onHear} />
-        ) : null}
         <AppButton label="Next Card" emoji="🔁" variant="primary" onPress={goNext} />
         <AppButton
           label="Play a Game"

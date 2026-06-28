@@ -13,7 +13,6 @@ import AppButton from "../components/AppButton";
 import { GAME_MODE_ITEMS, DIFFICULTY_ITEMS } from "../data/gameModeItems";
 import { getCategoryItem } from "../data/categoryItems";
 import { loadAppData } from "../storage/appStorage";
-import { isSpeechAvailableSafely } from "../utils/speechHelpers";
 
 export default function GamePickerScreen({ navigation, route }) {
   const categoryId = route?.params?.categoryId ?? "animals";
@@ -38,11 +37,7 @@ export default function GamePickerScreen({ navigation, route }) {
     }, [])
   );
 
-  // Only show Listen and Choose if speech can run safely on this device.
-  const speechOk = isSpeechAvailableSafely();
-  const modes = GAME_MODE_ITEMS.filter(
-    (m) => m.id !== "listen_choose" || speechOk
-  );
+  const modes = GAME_MODE_ITEMS;
 
   const onStart = () => {
     if (!gameMode) {
