@@ -59,7 +59,19 @@ jobs:
         env:
           ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
         run: |
-          echo "$ANDROID_KEYSTORE_BASE64" | base64 --decode > android/app/release.keystore
+          # Strip any stray whitespace/newlines the secret may have picked up,
+          # then base64-decode into the keystore file.
+          printf '%s' "$ANDROID_KEYSTORE_BASE64" | tr -d '[:space:]' | base64 --decode > android/app/release.keystore
+          # Fail early with a clear message if the result is not a valid keystore.
+          if [ ! -s android/app/release.keystore ]; then
+            echo "::error::Decoded keystore is empty. The ANDROID_KEYSTORE_BASE64 secret is missing or corrupted."
+            exit 1
+          fi
+          if ! keytool -list -keystore android/app/release.keystore -storepass "${{ secrets.ANDROID_KEYSTORE_PASSWORD }}" >/dev/null 2>&1; then
+            echo "::error::Keystore failed to open. The ANDROID_KEYSTORE_BASE64 value is corrupted or the password is wrong. Re-enter the secret."
+            exit 1
+          fi
+          echo "Keystore decoded and verified successfully."
 
       - name: Build signed release APK
         env:
